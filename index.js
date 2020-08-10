@@ -72,10 +72,10 @@ function fetchTransactions(accessToken, accNumber, link) {
 }
 
 async function main() {
-    let accounts = [];
-    let parsedAccounts = []
-    let nextAccountLink;
-    let nextTransactionLink;
+    let accounts = []; // Les comptes à récupérer depuis l'API
+    let parsedAccounts = [] // Les comptes parsés et formattés à afficher
+    let nextAccountLink; // Variable de parcours des comptes
+    let nextTransactionLink; // Variable de parcours des transactions
 
     // Récupération du refresh token
     let refreshToken = await fetchRefreshToken();
@@ -107,12 +107,17 @@ async function main() {
                 .catch(e => console.log());
         } while (nextTransactionLink);
 
+        // Calcul de la balance courante du compte
+        let balance = transactions.map(t => t.amount * ((t.sign === "DBT")? -1 : 1)).reduce((a,b) => a + b, 0);
+
         // Parser les informations selon le format demandé
         let parsed = {
             "acc_number": account.acc_number,
-            // Sommer les montants des transactions associée au compte courant
-            "amount": transactions.map(t => parseInt(t.amount)).reduce((a, b) => a + b, 0).toString(),
-            "transactions": transactions.map(transaction => (({ label, amount, currency }) => ({ label, amount, currency }))(transaction))
+            "amount": balance.toString(),
+            "transactions": transactions.map(transaction => {
+                transaction.amount *= ((transaction.sign === "DBT")? -1 : 1)
+                return transaction
+            }).map(transaction => (({ label, amount, currency }) => ({ label, amount, currency }))(transaction))
         };
         parsedAccounts.push(parsed);
     }
