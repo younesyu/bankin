@@ -46,7 +46,7 @@ function fetchAccessToken(refreshToken) {
 }
 
 function fetchAccounts(accessToken, link) {
-    link = link || `/accounts?page=1`;
+    link = link || `/accounts?page=1`; // Default value
 
     let headers = {
         "Content-Type": "application/json",
@@ -59,7 +59,7 @@ function fetchAccounts(accessToken, link) {
 }
 
 function fetchTransactions(accessToken, accNumber, link) {
-    link = link || `/accounts/${accNumber}/transactions?page=1`;
+    link = link || `/accounts/${accNumber}/transactions?page=1`; // Default value
 
     let headers = {
         "Content-Type": "application/json",
